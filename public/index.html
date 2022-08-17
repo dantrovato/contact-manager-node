@@ -11,7 +11,135 @@
   <script src="/javascripts/handlebars.js"></script>
 </head>
 <body>
-  
+  <!-- header -->
+  <header class="container jumbotron">
+    <div class="row">
+      <div class="col-12 text-center">
+        <h2>Contact Manager</h2>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12 text-center">
+        <p>Using Backbone.js, Localstorage, RequireJS, Handlebar and Bootstrap</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- main placeholder to toggle hidden class-->
+  <main class="container">
+    <div class="row">
+      <div class="col-6 text-center button-style add-contact">
+        <button type="button" name="button">Add Contact</button>
+      </div>
+      <div class="col-6 text-center search">
+        <input type="text" name="" value="Search">
+      </div>
+    </div>
+
+    <div class="row bottom-placeholder">
+      <div class="col-12 text-center">
+        <h4>There are no contacts.</h4>
+      </div>
+      <div class="col-12 button-style text-center add-contact">
+        <button type="button" name="button">Add Contact</button>
+      </div>
+
+      <!-- separator line -->
+      <div class="col line"></div>
+    </div>
+  </main>
+
+  <!-- contact form toggle hidden class-->
+  <div class="container shorter-width hidden" id="form-container">
+    <div class="row">
+      <div class="col text-center">
+        <h3>Create Contact</h3>
+      </div>
+    </div>
+
+    <!-- form -->
+    <div class="row">
+      <div class="col">
+        <form class="container" action="index.html" method="post">
+
+          <!-- fullname -->
+          <div class="row">
+            <div class="col-4">
+              <p>Full name:</p>
+            </div>
+            <div class="col-6">
+              <input type="text" name="" value="">
+            </div>
+            <div class="col-2"></div>
+          </div>
+
+          <!-- email -->
+          <div class="row">
+            <div class="col-4">
+              <p>Email address:</p>
+            </div>
+            <div class="col-6">
+              <input type="text" name="" value="">
+            </div>
+            <div class="col-2"></div>
+          </div>
+
+          <!-- phone -->
+          <div class="row">
+            <div class="col-4">
+              <p>Telephone number:</p>
+            </div>
+            <div class="col-6">
+              <input type="text" name="" value="">
+            </div>
+            <div class="col-2"></div>
+          </div>
+
+          <!-- command buttons -->
+          <!-- fullname -->
+          <div class="row">
+
+            <!-- empty space -->
+            <div class="col-4"></div>
+
+            <div class="col-6">
+              <div class="row space-between">
+                <div class="col-xs-12-md-6 text-center button-style" id="submit">
+                  <!-- submit button -->
+                  <input type="submit" name="" value="Submit">
+                </div>
+
+                <div class="col-xs-12-md-6 text-center button-style" id="cancel-create-contact">
+                  <!-- cancel button -->
+                  <button type="button" name="button">Cancel</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- empty space -->
+            <div class="col-2"></div>
+          </div>
+
+          <!-- separator line -->
+          <div class="row">
+            <div class="col line"></div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div class="container footer">
+    <div class="row">
+      <div class="col-12 text-center">
+        <p>Developed by <a href="http://www.devsaran.com">Devsaran.com</a> and <a href="http://www.239listing.com">239 Listing Real Estate</a>.</p>
+      </div>
+    </div>
+  </div>
+
   <script type="text/javascript" src="./javascripts/app.js">
 
   </script>

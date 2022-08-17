@@ -1,7 +1,90 @@
-/* header {
-  background: #6F5499;
+/* convenience rules */
+.hidden {
+  display: none;
 }
 
-h1, header {
+.shorter-width {
+  width: 70%;
+}
+
+.space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* header */
+.jumbotron {
+  background: #6F5499;
+  min-width: 100%;
   color: white;
-} */
+  border-radius: 0;
+}
+
+.jumbotron p {
+  opacity: .7;
+  font-size: 1.2rem;
+  font-weight: 100;
+}
+
+/* main - add contact */
+main.container .row {
+  background: #F5F5F5;
+  margin-top: -2rem;
+  height: 7.4rem;
+  border: 1px solid lightgrey;
+  border-radius: 5px;
+
+}
+
+.button-style, .search {
+  padding-top: 2rem;
+}
+
+.button-style button, .button-style input {
+  color: #6F5499;
+  background: white;
+  border: 1px solid black;
+  border-radius: 0.4rem;
+  height: 3rem;
+  width: 9rem;
+  font-weight: 400;
+  font-size: 1.2rem;
+}
+
+.search input {
+  border: 1px solid lightgrey;
+  color: lightgrey;
+  height: 2rem;
+  border-radius: 0.2rem;
+}
+
+/* main bottom placeholder */
+div.row.bottom-placeholder {
+  height: 10rem;
+  margin-top: 3rem;
+  /* width: 80%; */
+  /* padding: 2rem; */
+}
+
+div.row.bottom-placeholder button {
+  margin-bottom: 1rem;
+}
+
+.line {
+  height: 3rem;
+  border-bottom: 1px solid #F5F5F5;
+}
+
+div.row.bottom-placeholder h4 {
+  margin-top: 1rem;
+}
+
+/* form */
+form input, form button {
+  width: 100%;
+}
+
+/* footer */
+.footer {
+  margin-top: 4rem;
+}
