@@ -1,3 +1,6 @@
+// commit adds tags input and validation
+"use strict";
+
 function showForm() {
   const addContactsButtons = [...document.querySelectorAll(".add-contact")];
   addContactsButtons.forEach(button => {
@@ -36,6 +39,11 @@ function phoneIsValid(phone) {
   return phone.match(/\+[0-9]{9,13}$/);
 }
 
+function tagsAreValid(tags) {
+  // matches any number of letters, underscores, numbers and whitespaces
+  return tags.match(/^(\w|\s)*$/);
+}
+
 function addErrorStyles(element) {
   element.classList.add("error-styles");
   element.parentElement.previousElementSibling.classList.add("make-text-red");
@@ -56,6 +64,8 @@ function generateMessage(element) {
     message = "Enter one or more letter, underscore, digit or dot followed by a @ followed but same as before then a single dot and one or nmore letter.";
   } else if (text === "Telephone number:") {
     message = "Enter a plus sign followed by 9 to 13 digits.";
+  } else if (text === "Tags:") {
+    message = "Enter any number of letters, underscores, numbers and whitespaces only. For double barrel names use underscore: wood chopper => wood_chopper";
   }
 
   return message;
@@ -79,11 +89,12 @@ function removeErrorMessage(element) {
   }
 }
 
-function handleErrorStyles(name, email, phone) {
+function handleErrorStyles(name, email, phone, tags) {
   const $elements = $("form")[0].elements;
   const nameInput = $elements[0];
   const emailInput = $elements[1];
   const phoneInput = $elements[2];
+  const tagsInput = $elements[3];
 
   if (!nameIsValid(name)) {
     addErrorStyles(nameInput);
@@ -108,6 +119,14 @@ function handleErrorStyles(name, email, phone) {
     removeErrorStyles(phoneInput);
     removeErrorMessage(phoneInput);
   }
+
+  if (!tagsAreValid(tags)) {
+    addErrorStyles(tagsInput);
+    insertErrorMessage(tagsInput);
+  } else {
+    removeErrorStyles(tagsInput);
+    removeErrorMessage(tagsInput);
+  }
 }
 
 function formValid() {
@@ -117,14 +136,15 @@ function formValid() {
   const name = elements[0].value;
   const email = elements[1].value;
   const phone = elements[2].value;
+  const tags = elements[3].value;
 
   // adds error styles to incorrect inputs plus adds error message and it removes
   // all that if fields are correct
-  handleErrorStyles(name, email, phone);
+  handleErrorStyles(name, email, phone, tags);
 
-  if (nameIsValid(name) && emailIsValid(email) && phoneIsValid(phone)) {
-    console.log("form is valid");
-  }
+  // return true if form is valid
+  return nameIsValid(name) && emailIsValid(email) &&
+  phoneIsValid(phone) && tagsAreValid(tags);
 }
 
 function submitForm() {
@@ -132,16 +152,33 @@ function submitForm() {
   $submit.click(event => {
     event.preventDefault();
     if (formValid()) {
+      console.log("valid");
+      const formValues = $("form")[0].elements;
+      const data = {
+        full_name: formValues[0].value,
+        email: formValues[1].value,
+        phone_number: formValues[2].value,
+        tags: formValues[3].value.replace(/\s\s+/g, ","),
+      };
 
+      const json = JSON.stringify(data);
+
+      const request = fetch("http://localhost:3000/api/contacts/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: json,
+      });
+
+      request.
+      then(response => response.json()).
+      then(response => console.log(response));
     }
-    // check if form is valid
-    //   if it is send through
-    //   else reload
   });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-
   // attach click event listeners to the add contact buttons to show form
   showForm();
   // attach click event listeners to the add contact buttons to restore main page

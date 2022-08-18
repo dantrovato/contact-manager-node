@@ -19,5 +19,19 @@
     "email": "ph@example.com",
     "phone_number": "54321098761",
     "tags": null
+  },
+  {
+    "full_name": "Daniele Trovato",
+    "phone_number": "+447984290884",
+    "email": "plasticsoup@yahoo.co.uk",
+    "tags": "fava lessa",
+    "id": 4
+  },
+  {
+    "full_name": "Daniele Trovato",
+    "phone_number": "+447984290884",
+    "email": "plasticsoup@yahoo.co.uk",
+    "tags": "fava lessa",
+    "id": 5
   }
 ]
