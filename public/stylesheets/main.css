@@ -12,6 +12,15 @@
   justify-content: space-between;
 }
 
+.error-styles {
+  border: 1px solid darkred;
+  color: darkred;
+}
+
+.make-text-red {
+  color: darkred;
+}
+
 /* header */
 .jumbotron {
   background: #6F5499;
