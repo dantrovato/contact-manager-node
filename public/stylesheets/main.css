@@ -21,6 +21,10 @@
   color: darkred;
 }
 
+.add-padding {
+  padding: 3rem;
+}
+
 /* header */
 .jumbotron {
   background: #6F5499;
@@ -50,15 +54,18 @@ main.container .row {
 }
 
 .button-style button, .button-style input {
-  color: #6F5499;
-  background: white;
-  border: 1px solid black;
-  border-radius: 0.4rem;
   height: 3rem;
   width: 9rem;
-  font-weight: 400;
   font-size: 1.2rem;
 }
+
+#smaller-buttons, .button-style button, .button-style input {
+  color: #6F5499;
+  background: white;
+  border: 1px solid #6F5499;
+  border-radius: 0.4rem;
+}
+
 
 .search input {
   border: 1px solid lightgrey;
@@ -91,6 +98,19 @@ div.row.bottom-placeholder h4 {
 /* form */
 form input, form button {
   width: 100%;
+}
+
+/* contacts section  */
+#contacts-section {
+  display: flex;
+  /* justify-content: space-between; */
+  flex-wrap: wrap;
+}
+
+#smaller-buttons {
+  height: 2rem;
+  width: 5rem;
+  font-size: .8rem;
 }
 
 /* footer */

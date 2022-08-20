@@ -7,6 +7,8 @@
   <title>Document</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="./stylesheets/main.css">
+  <!-- bootrap icon library -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
   <script src="/javascripts/jquery.js"></script>
   <script src="/javascripts/handlebars.js"></script>
 </head>
@@ -21,7 +23,7 @@
 
     <div class="row">
       <div class="col-12 text-center">
-        <p>Using Backbone.js, Localstorage, RequireJS, Handlebar and Bootstrap</p>
+        <p>Using jQuery, Handlebars, Bootstrap and a lot of patience.</p>
       </div>
     </div>
   </header>
@@ -37,6 +39,7 @@
       </div>
     </div>
 
+    <!-- bottom part of main page showing where no contact yet exists -->
     <div class="row bottom-placeholder">
       <div class="col-12 text-center">
         <h4>There are no contacts.</h4>
@@ -48,6 +51,41 @@
       <!-- separator line -->
       <div class="col line"></div>
     </div>
+
+    <!-- alternative to the section above showing only when one or more contacts exist -->
+    <!-- populated with handlebars templating -->
+    <div id="contacts-section">
+
+    </div>
+
+    <script type="x-handlebars" id="all">
+      {{#each contact}}
+        {{> oneTemp}}
+      {{/each}}
+    </script>
+    <!-- handlebars this section -->
+    <script type="x-handlebars" id="one">
+      <div>
+        <h4>{{full_name}}</h4>
+        <dt>Phone Number:</dt>
+        <dd>{{phone_number}}</dd>
+        <dt>Email:</dt>
+        <dd>{{email}}</dd>
+        <dt>Tags:</dt>
+        {{#if tags}}
+          <dd>{{tags}}</dd>
+        {{else}}
+          <dd>No Tags</dd>
+        {{/if}}
+
+        <div class="">
+          <button type="button" name="button" id="smaller-buttons"><span class="bi bi-pencil"> Edit</span</button>
+          <button type="button" name="button" id="smaller-buttons"><span class="bi bi-trash"> Delete</span></button>
+        </div>
+      </div>
+
+    </script>
+
   </main>
 
   <!-- contact form toggle hidden class-->

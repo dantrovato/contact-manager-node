@@ -1,5 +1,32 @@
-// commit adds tags input and validation
 "use strict";
+
+function drawMainPage() {
+  const request = fetch("http://localhost:3000/api/contacts");
+
+  request
+  .then(response => response.json())
+  .then(response => {
+    if (response.length) {
+      // hide the bottom part of main page which should only show when there are no contacts
+      console.log(response);
+      $(".bottom-placeholder").hide();
+
+      const $contactsSection = $("#contacts-section");
+      const oneTemp = Handlebars.compile($("#one").html());
+      const allTemp = Handlebars.compile($("#all").html());
+      Handlebars.registerPartial("oneTemp", $("#one").html());
+      $contactsSection.html(allTemp({contact: response}));
+    }
+  })
+  .then(() => {
+    // this one adds padding to all individual contacts dinamically after they
+    // are collected from server
+    [...document.querySelector("#contacts-section").children].forEach(contact => {
+      contact.classList.add("add-padding");
+    });
+  })
+  .catch(error => console.log(error));
+}
 
 function showForm() {
   const addContactsButtons = [...document.querySelectorAll(".add-contact")];
@@ -147,6 +174,8 @@ function formValid() {
   phoneIsValid(phone) && tagsAreValid(tags);
 }
 
+function updateMainPage() {} // function to be created
+
 function submitForm() {
   const $submit = $("#submit");
   $submit.click(event => {
@@ -158,7 +187,7 @@ function submitForm() {
         full_name: formValues[0].value,
         email: formValues[1].value,
         phone_number: formValues[2].value,
-        tags: formValues[3].value.replace(/\s\s+/g, ","),
+        tags: formValues[3].value.replace(/\s+/g, ","),
       };
 
       const json = JSON.stringify(data);
@@ -173,12 +202,17 @@ function submitForm() {
 
       request.
       then(response => response.json()).
-      then(response => console.log(response));
+      then(response => console.log(response)).
+      then(updateMainPage()).
+      catch(error => console.log(error));
     }
   });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // check if any contact exists and if so display them on the page. If not let the default
+  // display go ahead
+  drawMainPage();
   // attach click event listeners to the add contact buttons to show form
   showForm();
   // attach click event listeners to the add contact buttons to restore main page
