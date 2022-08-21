@@ -1,9 +1,10 @@
-// git: fine tune styling and positioning of contacts.
-// order functions alphabetically
-// move the creation of variables to capture value of form elements into submitForm
-// function and add an else statement to that function to handleErrorStyles(). This
-// is moved there from within the formValid() function as this makes more logical sense.
 "use strict";
+// git Add dom.$formContainer.hide(); to cancelCreateContact() to hide the form when cancel button is clicked.
+// Remove toggleForm() function as it's no longer needed.
+// Fix bug whereby when user clicks on cancel button the no contact section appears.
+// Add resetForm() that fixes a bug where, if a form with error styles is canceled when it's next loaded it won't show the previous error styles. It also removes any previously inserted valid values.
+
+// FUNCTIONS ORDERED APHABETICALLY
 
 // collect variables that reference various dom elements
 const dom = {};
@@ -16,7 +17,14 @@ function addErrorStyles(element) {
 // when user click cancel on form it removes the form and goes back to main page
 function cancelCreateContact() {
   const $cancel = $("#cancel-create-contact");
-  $cancel.click(() => toggleForm());
+
+  $cancel.click(() => {
+    dom.$formContainer.hide();
+    dom.$noContacts.show();
+    dom.$searchContainer.show();
+    drawMainPage();
+    resetForm();
+  });
 }
 
 function drawMainPage() {
@@ -32,8 +40,11 @@ function drawMainPage() {
       // hide form container
       dom.$formContainer.hide();
 
+      dom.$contactsSection.show();
+
       Handlebars.registerPartial("oneTemp", dom.oneTemp);
       dom.$contactsSection.html(dom.allTemp({contact: response}));
+
     }
   })
   .then(() => {
@@ -42,6 +53,7 @@ function drawMainPage() {
     [...dom.$contactsSection[0].children].forEach(contact => {
       contact.classList.add("style-contact");
     });
+    dom.$contactsSection.show();
   })
   .catch(error => console.log(error));
 }
@@ -53,14 +65,6 @@ function emailIsValid(email) {
 }
 
 function formValid(name, email, phone, tags) {
-  // extract name, email and phone from form
-  // const $form = $("form");
-  // const elements = $form[0].elements;
-  // const name = elements[0].value;
-  // const email = elements[1].value;
-  // const phone = elements[2].value;
-  // const tags = elements[3].value;
-
   // handleErrorStyles(name, email, phone, tags);
 
   // return true if form is valid
@@ -127,7 +131,6 @@ function handleErrorStyles(name, email, phone, tags) {
   }
 }
 
-
 function insertErrorMessage(element) {
   // this checks and only inserts the error message if it hasn't already been set
   if (!element.nextElementSibling) {
@@ -161,14 +164,25 @@ function removeErrorStyles(element) {
   element.parentElement.previousElementSibling.classList.remove("make-text-red");
 }
 
+function resetForm() {
+  // remove error styles and messages from form
+  [...dom.$formContainer[0].querySelectorAll("input")].slice(0, 4).forEach(input => {
+    removeErrorStyles(input);
+    removeErrorMessage(input);
+    input.value = "";
+  });
+}
+
 // attach click event listeners to the add contact buttons to show form
 function showForm() {
   const addContactsButtons = [...document.querySelectorAll(".add-contact")];
   addContactsButtons.forEach(button => {
     button.addEventListener("click", event => {
+      dom.$contactsSection.hide();
       dom.$formContainer.show();
       dom.$noContacts.hide();
       dom.$searchContainer.hide();
+      // dom.$searchContainer.hide();
     });
   });
 }
@@ -207,9 +221,10 @@ function submitForm() {
 
       request.
       then(response => response.json()).
-      then(response => console.log(response)).
-      then(() => {
+      then(response => {
+        console.log(response);
         drawMainPage();
+        dom.$searchContainer.show();
       }).
       catch(error => console.log(error));
     } else {
@@ -224,12 +239,12 @@ function tagsAreValid(tags) {
 }
 
 // may need to remove this
-function toggleForm() {
-  const $form = $("#form-container");
-  const $main = $("main");
-  $form.slideToggle();
-  $main.slideToggle();
-}
+// function toggleForm() {
+//   const $form = $("#form-container");
+//   const $main = $("main");
+//   $form.slideToggle();
+//   $main.slideToggle();
+// }
 
 document.addEventListener("DOMContentLoaded", () => {
   // populate the dom object literal with useful variables:
