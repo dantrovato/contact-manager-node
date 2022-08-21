@@ -21,8 +21,9 @@
   color: darkred;
 }
 
-.add-padding {
+.style-contact {
   padding: 3rem;
+  width: 17.3rem;
 }
 
 /* header */
@@ -59,6 +60,11 @@ main.container .row {
   font-size: 1.2rem;
 }
 
+.edit-contact-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
 #smaller-buttons, .button-style button, .button-style input {
   color: #6F5499;
   background: white;
@@ -75,14 +81,14 @@ main.container .row {
 }
 
 /* main bottom placeholder */
-div.row.bottom-placeholder {
+div.row.no-contacts {
   height: 10rem;
   margin-top: 3rem;
   /* width: 80%; */
   /* padding: 2rem; */
 }
 
-div.row.bottom-placeholder button {
+div.row.no-contacts button {
   margin-bottom: 1rem;
 }
 
@@ -91,7 +97,7 @@ div.row.bottom-placeholder button {
   border-bottom: 1px solid #F5F5F5;
 }
 
-div.row.bottom-placeholder h4 {
+div.row.no-contacts h4 {
   margin-top: 1rem;
 }
 

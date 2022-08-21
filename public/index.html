@@ -29,7 +29,7 @@
   </header>
 
   <!-- main placeholder to toggle hidden class-->
-  <main class="container">
+  <main class="container search-container">
     <div class="row">
       <div class="col-6 text-center button-style add-contact">
         <button type="button" name="button">Add Contact</button>
@@ -40,7 +40,7 @@
     </div>
 
     <!-- bottom part of main page showing where no contact yet exists -->
-    <div class="row bottom-placeholder">
+    <div class="row no-contacts">
       <div class="col-12 text-center">
         <h4>There are no contacts.</h4>
       </div>
@@ -58,38 +58,10 @@
 
     </div>
 
-    <script type="x-handlebars" id="all">
-      {{#each contact}}
-        {{> oneTemp}}
-      {{/each}}
-    </script>
-    <!-- handlebars this section -->
-    <script type="x-handlebars" id="one">
-      <div>
-        <h4>{{full_name}}</h4>
-        <dt>Phone Number:</dt>
-        <dd>{{phone_number}}</dd>
-        <dt>Email:</dt>
-        <dd>{{email}}</dd>
-        <dt>Tags:</dt>
-        {{#if tags}}
-          <dd>{{tags}}</dd>
-        {{else}}
-          <dd>No Tags</dd>
-        {{/if}}
-
-        <div class="">
-          <button type="button" name="button" id="smaller-buttons"><span class="bi bi-pencil"> Edit</span</button>
-          <button type="button" name="button" id="smaller-buttons"><span class="bi bi-trash"> Delete</span></button>
-        </div>
-      </div>
-
-    </script>
-
   </main>
 
   <!-- contact form toggle hidden class-->
-  <div class="container shorter-width hidden" id="form-container">
+  <div class="container shorter-width hidden form-container">
     <div class="row">
       <div class="col text-center">
         <h3>Create Contact</h3>
@@ -189,8 +161,33 @@
     </div>
   </div>
 
-  <script type="text/javascript" src="./javascripts/app.js">
-
+  <script type="x-handlebars" id="all">
+    {{#each contact}}
+      {{> oneTemp}}
+    {{/each}}
   </script>
+  <!-- handlebars this section -->
+  <script type="x-handlebars" id="one">
+    <div>
+      <h4>{{full_name}}</h4>
+      <dt>Phone Number:</dt>
+      <dd>{{phone_number}}</dd>
+      <dt>Email:</dt>
+      <dd>{{email}}</dd>
+      <dt>Tags:</dt>
+      {{#if tags}}
+        <dd>{{tags}}</dd>
+      {{else}}
+        <dd>No Tags</dd>
+      {{/if}}
+
+      <div class="edit-contact-buttons">
+        <button type="button" name="button" id="smaller-buttons"><span class="bi bi-pencil"> Edit</span</button>
+        <button type="button" name="button" id="smaller-buttons"><span class="bi bi-trash"> Delete</span></button>
+      </div>
+    </div>
+  </script>
+
+  <script type="text/javascript" src="./javascripts/app.js"></script>
 </body>
 </html>

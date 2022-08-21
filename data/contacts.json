@@ -1,51 +1,16 @@
 [
   {
-    "id": 1,
-    "full_name": "Naveed Fida",
-    "email": "nf@example.com",
-    "phone_number": "12345678901",
-    "tags": "work,friend"
-  },
-  {
-    "id": 2,
-    "full_name": "Victor Reyes",
-    "email": "vpr@example.com",
-    "phone_number": "09876543210",
-    "tags": "work,friend"
-  },
-  {
-    "id": 3,
-    "full_name": "Pete Hanson",
-    "email": "ph@example.com",
-    "phone_number": "54321098761",
-    "tags": null
+    "full_name": "Daniele Trovato",
+    "phone_number": "+447984290884",
+    "email": "plasticsoup@yahoo.co.uk",
+    "tags": "",
+    "id": 1
   },
   {
     "full_name": "Daniele Trovato",
     "phone_number": "+447984290884",
     "email": "plasticsoup@yahoo.co.uk",
-    "tags": "fava lessa",
-    "id": 4
-  },
-  {
-    "full_name": "Daniele Trovato",
-    "phone_number": "+447984290884",
-    "email": "plasticsoup@yahoo.co.uk",
-    "tags": "fava lessa",
-    "id": 5
-  },
-  {
-    "full_name": "Daniele Trovato",
-    "phone_number": "+447984290884",
-    "email": "plasticsoup@yahoo.co.uk",
-    "tags": "mammt,soret",
-    "id": 6
-  },
-  {
-    "full_name": "Daniele Trovato",
-    "phone_number": "+447984290884",
-    "email": "plasticsoup@yahoo.co.uk",
-    "tags": "mammt,soret",
-    "id": 7
+    "tags": "2",
+    "id": 2
   }
 ]
