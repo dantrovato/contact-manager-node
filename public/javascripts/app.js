@@ -1,10 +1,17 @@
 "use strict";
-// git Add dom.$formContainer.hide(); to cancelCreateContact() to hide the form when cancel button is clicked.
-// Remove toggleForm() function as it's no longer needed.
-// Fix bug whereby when user clicks on cancel button the no contact section appears.
-// Add resetForm() that fixes a bug where, if a form with error styles is canceled when it's next loaded it won't show the previous error styles. It also removes any previously inserted valid values.
-
 // FUNCTIONS ORDERED APHABETICALLY
+// git
+// Add row div with class="line" to space vertically the form from the Create Contact heading in html and give that css rule a margin bottom of 3 rem.
+// Add resetForm() to submitForm().
+// Add runContactManager() async await IIFE to run the app.
+// Add attachHandlersToContactButtons() which is called from within the runContactManager() after awaiting the submitting of the form.
+// Add html data attribute data-id to the $contactsSection templates so that we can use it to edit or delete correct contact.
+// Add else part to if statement in drawMainPage() to show $noContacts section and hide the now deleted contact $contactsSection.
+// Remove code at the end of drawMainPage() which kept showing the contacts page.
+
+// to do:
+// handle edit button
+// implement search facility
 
 // collect variables that reference various dom elements
 const dom = {};
@@ -12,6 +19,41 @@ const dom = {};
 function addErrorStyles(element) {
   element.classList.add("error-styles");
   element.parentElement.previousElementSibling.classList.add("make-text-red");
+}
+
+// once the form is submitted it calls this function which attaches handlers for
+// the edit and the delete buttons within the individual contacts
+function attachHandlersToContactButtons() {
+  dom.$contactsSection.on("click", event => {
+
+    // if element clicked is either edit or delete
+    if (event.target.name === "delete" || event.target.parentElement.name === "delete") {
+        const contact = event.target.closest("div.style-contact");
+        const id = contact.getAttribute("data-id");
+        // get the id of the contact and put in url and body
+        (async function deleteContact() {
+          try {
+            await fetch("http://localhost:3000/api/contacts/" + id, {
+              method: "DELETE",
+              body: id,
+              headers: {
+                'Content-Type': 'text/plain',
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+              },
+            });
+            drawMainPage();
+            // return;
+          } catch (e) {
+            console.log("Custom error + " + e);
+          }
+        })();
+    }
+
+    if (event.target.name === "edit" || event.target.parentElement.name === "edit") {
+      // console.log(event.target);
+    }
+
+  });
 }
 
 // when user click cancel on form it removes the form and goes back to main page
@@ -35,16 +77,19 @@ function drawMainPage() {
     if (response.length) {
       // hide the bottom part of main page which should only show when there are no contacts
       console.log(response);
+      // console.log(response.id);
       dom.$noContacts.hide();
-
-      // hide form container
       dom.$formContainer.hide();
-
       dom.$contactsSection.show();
+
+      // attachHandlersToContactButtons();
 
       Handlebars.registerPartial("oneTemp", dom.oneTemp);
       dom.$contactsSection.html(dom.allTemp({contact: response}));
 
+    } else {
+      dom.$contactsSection.hide();
+      dom.$noContacts.show();
     }
   })
   .then(() => {
@@ -53,7 +98,7 @@ function drawMainPage() {
     [...dom.$contactsSection[0].children].forEach(contact => {
       contact.classList.add("style-contact");
     });
-    dom.$contactsSection.show();
+    // dom.$contactsSection.show();
   })
   .catch(error => console.log(error));
 }
@@ -225,6 +270,7 @@ function submitForm() {
         console.log(response);
         drawMainPage();
         dom.$searchContainer.show();
+        resetForm();
       }).
       catch(error => console.log(error));
     } else {
@@ -238,14 +284,6 @@ function tagsAreValid(tags) {
   return tags.match(/^(\w|\s)*$/);
 }
 
-// may need to remove this
-// function toggleForm() {
-//   const $form = $("#form-container");
-//   const $main = $("main");
-//   $form.slideToggle();
-//   $main.slideToggle();
-// }
-
 document.addEventListener("DOMContentLoaded", () => {
   // populate the dom object literal with useful variables:
   dom.$contactsSection = $("#contacts-section");  // where handlebars is gonna show
@@ -255,16 +293,20 @@ document.addEventListener("DOMContentLoaded", () => {
   dom.$formContainer = $(".form-container");
   dom.$searchContainer = $(".search-container");
 
-  // check if any contact exists and if so display them on the page. If not let the default
-  // display go ahead
-  drawMainPage();
-  // attach click event listeners to the add contact buttons to show form
-  showForm();
-  // attach click event listeners to the add contact buttons to restore main page
-  cancelCreateContact();
-  // attach click event listener to submit button in the form
-  submitForm();
+  (async function runContactManager() {
+    // check if any contact exists and if so display them on the page. If not let the default
+    // display go ahead
+    drawMainPage();
+    // attach click event listeners to the add contact buttons to show form
+    showForm();
+    // attach click event listeners to the add contact buttons to restore main page
+    cancelCreateContact();
+    // attach click event listener to submit button in the form
+    await submitForm();
 
+    attachHandlersToContactButtons();
+
+  })();
   // fetch("http://localhost:3000/api/contacts/1", {method: "DELETE", body: 1});
   // fetch("http://localhost:3000/api/contacts/2", {method: "DELETE", body: 2});
   // fetch("http://localhost:3000/api/contacts/3", {method: "DELETE", body: 3});

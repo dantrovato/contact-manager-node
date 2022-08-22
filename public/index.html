@@ -68,6 +68,11 @@
       </div>
     </div>
 
+    <!-- separator line -->
+    <div class="row">
+      <div class="col line"></div>
+    </div>
+
     <!-- form -->
     <div class="row">
       <div class="col">
@@ -168,7 +173,7 @@
   </script>
   <!-- handlebars this section -->
   <script type="x-handlebars" id="one">
-    <div>
+    <div data-id={{id}}>
       <h4>{{full_name}}</h4>
       <dt>Phone Number:</dt>
       <dd>{{phone_number}}</dd>
@@ -182,8 +187,8 @@
       {{/if}}
 
       <div class="edit-contact-buttons">
-        <button type="button" name="button" id="smaller-buttons"><span class="bi bi-pencil"> Edit</span</button>
-        <button type="button" name="button" id="smaller-buttons"><span class="bi bi-trash"> Delete</span></button>
+        <button type="button" name="edit" class="smaller-buttons edit"><span class="bi bi-pencil"> Edit</span</button>
+        <button type="button" name="delete" class="smaller-buttons delete"><span class="bi bi-trash"> Delete</span></button>
       </div>
     </div>
   </script>
