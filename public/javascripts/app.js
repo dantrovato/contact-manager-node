@@ -1,12 +1,13 @@
 "use strict";
 // FUNCTIONS ORDERED APHABETICALLY
 // git
+// 
 
 // bugs:
 
 // to do:
 // add alert to check if user really wants to delete contact
-// handle edit button
+// handle cancel button
 // implement search facility
 
 // collect variables that reference various dom elements
@@ -18,7 +19,9 @@ function addErrorStyles(element) {
 }
 
 // once the form is submitted it calls this function which attaches handlers for
-// the edit and the delete buttons within the individual contacts
+// the delete, edit buttons within the individual contacts
+// then when the edit button is clicked it takes us to the edit-form page where we
+// can edit and resubmit the form or cancel the edit
 function attachHandlersToContactButtons() {
   dom.$contactsSection.on("click", event => {
     // get the id of the contact stored in the div as data attribute
@@ -58,6 +61,7 @@ function attachHandlersToContactButtons() {
       const form = document.querySelector("form");
       const entries = form.querySelectorAll("input");
       const submit = document.querySelector("#edit-submit");
+      const cancel = submit.parentElement.nextElementSibling;
       const $editForm = $("#edit-form");
       let $editName = $("#edit-name");
       let $editPhone = $("#edit-phone");
@@ -125,7 +129,12 @@ function attachHandlersToContactButtons() {
         }
 
       });
-      // !!! add event listener for cancel button !!!
+
+      // cancel.addEventListener("click", () => {
+      //   console.log(9);
+      //   cancelCreateContact();
+      // });
+
     }
 
   });
@@ -133,14 +142,16 @@ function attachHandlersToContactButtons() {
 
 // when user click cancel on form it removes the form and goes back to main page
 function cancelCreateContact() {
-  const $cancel = $("#cancel-create-contact");
+  const $cancel = $(".cancel-create-contact");
 
   $cancel.click(() => {
     dom.$formContainer.hide();
+    dom.$editFormContainer.hide();
     dom.$noContacts.show();
     dom.$searchContainer.show();
     drawMainPage();
     resetForm(dom.$formContainer);
+    resetForm(dom.$editFormContainer);
   });
 }
 
