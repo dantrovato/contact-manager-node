@@ -1,14 +1,16 @@
 "use strict";
 // FUNCTIONS ORDERED APHABETICALLY
-// git
-// 
+// git:
 
 // bugs:
 
 // to do:
-// add alert to check if user really wants to delete contact
-// handle cancel button
+
+// Add styles to buttons for hovers and when clicked
+// Capitalize input names in forms
 // implement search facility
+// Move 'search' placeholder slightly to the right inside search box
+
 
 // collect variables that reference various dom elements
 const dom = {};
@@ -30,20 +32,22 @@ function attachHandlersToContactButtons() {
 
     // if element clicked is 'delete' delete contact and reload main section of the page
     if (event.target.name === "delete" || event.target.parentElement.name === "delete") {
-      (async function deleteContact() {
-        try {
-          await fetch("http://localhost:3000/api/contacts/" + id, {
-            method: "DELETE",
-            body: id,
-            headers: {
-              'Content-Type': 'text/plain',
-            },
-          });
-          drawMainPage();
-        } catch (e) {
-          console.log("Custom error + " + e);
-        }
-      })();
+      if (confirm("Is this really it for this contact??!")) {
+        (async function deleteContact() {
+          try {
+            await fetch("http://localhost:3000/api/contacts/" + id, {
+              method: "DELETE",
+              body: id,
+              headers: {
+                'Content-Type': 'text/plain',
+              },
+            });
+            drawMainPage();
+          } catch (e) {
+            console.log("Custom error + " + e);
+          }
+        })();
+      }
     }
 
     // if element clicked is edit
@@ -127,16 +131,24 @@ function attachHandlersToContactButtons() {
         } else {
           handleErrorStyles(elements, $editForm);
         }
-
       });
-
-      // cancel.addEventListener("click", () => {
-      //   console.log(9);
-      //   cancelCreateContact();
-      // });
-
     }
+  });
+}
 
+function attachListenerToSearchBtn() {
+  dom.search.addEventListener("keypress", event => {
+    if (event.key.match(/^(\w|,|\s|\-)$/)) {
+      const request = fetch("http://localhost:3000/api/contacts");
+      request.
+      then(response => response.json()).
+      then(namesArray => {
+        console.log(namesArray.filter(contact => contact.full_name.toLowerCase().match(dom.search.value.toLowerCase()) ||
+        contact.tags.toLowerCase().match(dom.search.value.toLowerCase())));
+        /////////////////////////// FINISH THIS ONE /////////////////////////////////////////
+      }).
+      catch(error => console.log(error));
+    }
   });
 }
 
@@ -175,12 +187,8 @@ function drawMainPage() {
       dom.$noContacts.hide();
       dom.$formContainer.hide();
       dom.$contactsSection.show();
-
-      // attachHandlersToContactButtons();
-
       Handlebars.registerPartial("oneTemp", dom.oneTemp);
       dom.$contactsSection.html(dom.allTemp({contact: response}));
-
     } else {
       dom.$contactsSection.hide();
       dom.$noContacts.show();
@@ -387,17 +395,20 @@ document.addEventListener("DOMContentLoaded", () => {
   dom.$formContainer = $(".form-container");
   dom.$searchContainer = $(".search-container");
   dom.$editFormContainer = $(".edit-form-container");
+  dom.search = document.querySelector("#search");
 
-  (async function runContactManager() {
+  (function runContactManager() {
     // check if any contact exists and if so display them on the page. If not let the default
     // display go ahead
     drawMainPage();
+
+    attachListenerToSearchBtn();
     // attach click event listeners to the add contact buttons to show form
     showForm();
-    // attach click event listeners to the add contact buttons to restore main page
+    // attach click event listeners to the cancel buttons to restore main page
     cancelCreateContact();
     // attach click event listener to submit button in the form
-    await submitForm();
+    submitForm();
 
     attachHandlersToContactButtons();
 
