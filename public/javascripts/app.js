@@ -1,20 +1,19 @@
 "use strict";
 // FUNCTIONS ORDERED APHABETICALLY
 // git:
-// 1 - Add code to the existing attachHandlersToContactButtons() to display result of search. 2 - Fix bug on edit contact to remove all commas to edit form while editing.
 
 // bugs:
+//
 
 // to do:
-// display result of search
-// Add styles to buttons for hovers and when clicked
-// Capitalize input names in forms
-// implement search facility
+
 // Move 'search' placeholder slightly to the right inside search box
+// The name goes on two lines if too long. Contact looks taller than next one
+// Refactor
 
 
-// collect variables that reference various dom elements
-const dom = {};
+// collect variables that reference various domVariables elements
+const domVariables = {};
 
 function addErrorStyles(element) {
   element.classList.add("error-styles");
@@ -22,7 +21,7 @@ function addErrorStyles(element) {
 }
 
 function addPositioningToContacts() {
-  [...dom.$contactsSection[0].children].forEach(contact => {
+  [...domVariables.$contactsSection[0].children].forEach(contact => {
     contact.classList.add("style-contact");
   });
 }
@@ -32,130 +31,137 @@ function addPositioningToContacts() {
 // then when the edit button is clicked it takes us to the edit-form page where we
 // can edit and resubmit the form or cancel the edit
 function attachHandlersToContactButtons() {
-  dom.$contactsSection.on("click", event => {
+  domVariables.$contactsSection.on("click", event => {
     // get the id of the contact stored in the div as data attribute
     const contact = event.target.closest("div.style-contact");
-    const id = contact.getAttribute("data-id");
-
-    // if element clicked is 'delete' delete contact and reload main section of the page
-    if (event.target.name === "delete" || event.target.parentElement.name === "delete") {
-      if (confirm("Is this really it for this contact??!")) {
-        (async function deleteContact() {
-          try {
-            await fetch("http://localhost:3000/api/contacts/" + id, {
-              method: "DELETE",
-              body: id,
-              headers: {
-                'Content-Type': 'text/plain',
-              },
-            });
-            drawMainPage();
-          } catch (e) {
-            console.log("Custom error + " + e);
-          }
-        })();
-      }
-    }
-
-    // if element clicked is edit
-    if (event.target.name === "edit" || event.target.parentElement.name === "edit") {
-      dom.$searchContainer.hide();
-      dom.$editFormContainer.show();
-      dom.$contactsSection.hide();
-
-  // fill form entries with current contact data
-      const fullName = contact.querySelector("h4").textContent;
-    // collect values from the relevant contact
-      const inputs = [... contact.querySelectorAll("dd")];
-      const values = inputs.map(input => input.textContent);
-      let [ phoneNumber, email, tags ] = values;
-      const form = document.querySelector("form");
-      const entries = form.querySelectorAll("input");
-      const submit = document.querySelector("#edit-submit");
-      const cancel = submit.parentElement.nextElementSibling;
-      const $editForm = $("#edit-form");
-      let $editName = $("#edit-name");
-      let $editPhone = $("#edit-phone");
-      let $editEmail = $("#edit-email");
-      let $editTags = $("#edit-tags");
-
-      entries[0].value = fullName;
-      entries[1].value = phoneNumber;
-      entries[2].value = email;
-      entries[3].value = tags;
-
-      $editName.val(fullName);
-      $editPhone.val(phoneNumber);
-      $editEmail.val(email);
-      $editTags.val(tags.replace(/,/g, " "));
-
-      submit.addEventListener("click", event => {
-        event.preventDefault();
-        const elements = collectValuesFromForm($editForm);
-
-        let [editedName, editedPhone, editedEmail, editedTags] = elements;
-
-        // validate form
-        if (formValid(elements)) {
-          console.log("edits are valid");
-          const editedData = {
-            id: id,
-            full_name: editedName,
-            phone_number: editedPhone,
-            email: editedEmail,
-          };
-
-          if (editedTags === "No Tags") {
-            editedData.tags = "No Tags";
-          } else {
-            editedData.tags = editedTags.replace(/\s/g, ",");
-          }
-
-          console.log(editedData);
-
-          const json = JSON.stringify(editedData);
-          console.log(json);
-          const request = fetch("http://localhost:3000/api/contacts/" + id, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: json,
-          });
-
-          request.
-          then(response => response.json()).
-          then(response => {
-            console.log(response);
-            drawMainPage();
-            dom.$searchContainer.show();
-            resetForm(dom.$editFormContainer);
-            resetForm(dom.$formContainer);
-            dom.$editFormContainer.hide();
-
-          }).
-          catch(error => console.log(error));
-        } else {
-          handleErrorStyles(elements, $editForm);
+    // the if (contact) makes sure contact is not null which it would be if user clicked on contacts-section but outside of the contacts themselves
+    if (contact) {
+      const id = contact.getAttribute("data-id");
+      // if element clicked is 'delete' delete contact and reload main section of the page
+      if (event.target.name === "delete" || event.target.parentElement.name === "delete") {
+        if (confirm("Is this really it for this contact??!")) {
+          (async function deleteContact() {
+            try {
+              await fetch("http://localhost:3000/api/contacts/" + id, {
+                method: "DELETE",
+                body: id,
+                headers: {
+                  'Content-Type': 'text/plain',
+                },
+              });
+              drawMainPage();
+            } catch (e) {
+              console.log("Custom error + " + e);
+            }
+          })();
         }
-      });
+      }
+
+      // if element clicked is edit
+      if (event.target.name === "edit" || event.target.parentElement.name === "edit") {
+        domVariables.$searchContainer.hide();
+        domVariables.$editFormContainer.show();
+        domVariables.$contactsSection.hide();
+
+    // fill form entries with current contact data
+        const fullName = contact.querySelector("h4").textContent;
+      // collect values from the relevant contact
+        const inputs = [... contact.querySelectorAll("dd")];
+        const values = inputs.map(input => input.textContent);
+        let [ phoneNumber, email, tags ] = values;
+        const form = document.querySelector("form");
+        const entries = form.querySelectorAll("input");
+        const submit = document.querySelector("#edit-submit");
+        const cancel = submit.parentElement.nextElementSibling;
+        const $editForm = $("#edit-form");
+        let $editName = $("#edit-name");
+        let $editPhone = $("#edit-phone");
+        let $editEmail = $("#edit-email");
+        let $editTags = $("#edit-tags");
+
+        entries[0].value = fullName;
+        entries[1].value = phoneNumber;
+        entries[2].value = email;
+        entries[3].value = tags;
+
+        $editName.val(fullName);
+        $editPhone.val(phoneNumber);
+        $editEmail.val(email);
+        $editTags.val(tags.replace(/,/g, " "));
+
+        submit.addEventListener("click", event => {
+          event.preventDefault();
+          const elements = collectValuesFromForm($editForm);
+
+          let [editedName, editedPhone, editedEmail, editedTags] = elements;
+
+          // validate form
+          if (formValid(elements)) {
+            console.log("edits are valid");
+            const editedData = {
+              id: id,
+              full_name: editedName,
+              phone_number: editedPhone,
+              email: editedEmail,
+            };
+
+            if (editedTags === "No Tags") {
+              editedData.tags = "No Tags";
+            } else {
+              editedData.tags = editedTags.replace(/\s/g, ",");
+            }
+
+            console.log(editedData);
+
+            const json = JSON.stringify(editedData);
+            console.log(json);
+            const request = fetch("http://localhost:3000/api/contacts/" + id, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: json,
+            });
+
+            request.
+            then(response => response.json()).
+            then(response => {
+              // console.log(response);
+              drawMainPage();
+              domVariables.$searchContainer.show();
+              resetForm(domVariables.$editFormContainer);
+              resetForm(domVariables.$formContainer);
+              domVariables.$editFormContainer.hide();
+
+            }).
+            catch(error => console.log(error));
+          } else {
+            handleErrorStyles(elements, $editForm);
+          }
+        });
+      }
     }
   });
 }
 
 function attachListenerToSearchBtn() {
-  dom.search.addEventListener("keydown", event => {
+  domVariables.search.addEventListener("keydown", event => {
     const request = fetch("http://localhost:3000/api/contacts");
     request.
     then(response => response.json()).
     then(namesArray => {
-      const results = namesArray.filter(contact => contact.full_name.toLowerCase().match(dom.search.value.toLowerCase()) ||
-      contact.tags.toLowerCase().match(dom.search.value.toLowerCase()));
-      dom.$contactsSection.html(dom.allTemp({contact: results}));
+      const results = namesArray.filter(contact => contact.full_name.toLowerCase().match(domVariables.search.value.toLowerCase()) ||
+      contact.tags.toLowerCase().match(domVariables.search.value.toLowerCase()));
+      domVariables.$contactsSection.html(domVariables.allTemp({contact: results}));
       addPositioningToContacts();
-      console.log(namesArray)
+      // console.log(namesArray)
     }).
     catch(error => console.log(error));
+  });
+
+  domVariables.search.addEventListener("blur", event => {
+    console.log(9);
+    domVariables.search.setAttribute("value", "");
   });
 }
 
@@ -164,13 +170,13 @@ function cancelCreateContact() {
   const $cancel = $(".cancel-create-contact");
 
   $cancel.click(() => {
-    dom.$formContainer.hide();
-    dom.$editFormContainer.hide();
-    dom.$noContacts.show();
-    dom.$searchContainer.show();
+    domVariables.$formContainer.hide();
+    domVariables.$editFormContainer.hide();
+    domVariables.$noContacts.show();
+    domVariables.$searchContainer.show();
     drawMainPage();
-    resetForm(dom.$formContainer);
-    resetForm(dom.$editFormContainer);
+    resetForm(domVariables.$formContainer);
+    resetForm(domVariables.$editFormContainer);
   });
 }
 
@@ -191,21 +197,21 @@ function drawMainPage() {
   then(response => {
     if (response.length) {
       // hide the bottom part of main page which should only show when there are no contacts
-      dom.$noContacts.hide();
-      dom.$formContainer.hide();
-      dom.$contactsSection.show();
-      Handlebars.registerPartial("oneTemp", dom.oneTemp);
-      dom.$contactsSection.html(dom.allTemp({contact: response}));
+      domVariables.$noContacts.hide();
+      domVariables.$formContainer.hide();
+      domVariables.$contactsSection.show();
+      Handlebars.registerPartial("oneTemp", domVariables.oneTemp);
+      domVariables.$contactsSection.html(domVariables.allTemp({contact: response}));
     } else {
-      dom.$contactsSection.hide();
-      dom.$noContacts.show();
+      domVariables.$contactsSection.hide();
+      domVariables.$noContacts.show();
     }
   }).
   then(() => {
     // this one adds padding to all individual contacts after they
     // are collected from server and formatted for rendering
     addPositioningToContacts();
-    // dom.$contactsSection.show();
+    // domVariables.$contactsSection.show();
   }).
   catch(error => console.log(error));
 }
@@ -331,13 +337,13 @@ function showForm() {
   const addContactsButtons = [...document.querySelectorAll(".add-contact")];
   addContactsButtons.forEach(button => {
     button.addEventListener("click", event => {
-      dom.$contactsSection.hide();
+      domVariables.$contactsSection.hide();
       // makes sure h3 has appropriate text as editing in loads the form and changes the text
       $(".form-container h3").text("Create Contact");
-      dom.$formContainer.show();
-      dom.$noContacts.hide();
-      dom.$searchContainer.hide();
-      // dom.$searchContainer.hide();
+      domVariables.$formContainer.show();
+      domVariables.$noContacts.hide();
+      domVariables.$searchContainer.hide();
+      // domVariables.$searchContainer.hide();
     });
   });
 }
@@ -354,7 +360,7 @@ function submitForm() {
       console.log("valid");
       const formValues = $form[0].elements;
       const data = {
-        full_name: formValues[0].value,
+        full_name: formValues[0].value.split(" ").map(name => _.capitalize(name)).join(" "),
         phone_number: formValues[1].value,
         email: formValues[2].value,
         tags: formValues[3].value.replace(/\s/g, ","),
@@ -375,8 +381,8 @@ function submitForm() {
       then(response => {
         console.log(response);
         drawMainPage();
-        dom.$searchContainer.show();
-        resetForm(dom.$formContainer);
+        domVariables.$searchContainer.show();
+        resetForm(domVariables.$formContainer);
       }).
       catch(error => console.log(error));
     } else {
@@ -392,15 +398,15 @@ function tagsAreValid(tags) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // populate the dom object literal with useful variables:
-  dom.$contactsSection = $("#contacts-section");  // where handlebars is gonna show
-  dom.oneTemp = Handlebars.compile($("#one").html());
-  dom.allTemp = Handlebars.compile($("#all").html());
-  dom.$noContacts = $(".no-contacts");
-  dom.$formContainer = $(".form-container");
-  dom.$searchContainer = $(".search-container");
-  dom.$editFormContainer = $(".edit-form-container");
-  dom.search = document.querySelector("#search");
+  // populate the domVariables object literal with useful variables:
+  domVariables.$contactsSection = $("#contacts-section");  // where handlebars is gonna show
+  domVariables.oneTemp = Handlebars.compile($("#one").html());
+  domVariables.allTemp = Handlebars.compile($("#all").html());
+  domVariables.$noContacts = $(".no-contacts");
+  domVariables.$formContainer = $(".form-container");
+  domVariables.$searchContainer = $(".search-container");
+  domVariables.$editFormContainer = $(".edit-form-container");
+  domVariables.search = document.querySelector("#search");
 
   (function runContactManager() {
     // check if any contact exists and if so display them on the page. If not let the default
@@ -416,10 +422,5 @@ document.addEventListener("DOMContentLoaded", () => {
     submitForm();
 
     attachHandlersToContactButtons();
-
   })();
-  // fetch("http://localhost:3000/api/contacts/1", {method: "DELETE", body: 1});
-  // fetch("http://localhost:3000/api/contacts/2", {method: "DELETE", body: 2});
-  // fetch("http://localhost:3000/api/contacts/3", {method: "DELETE", body: 3});
-  // fetch("http://localhost:3000/api/contacts/4", {method: "DELETE", body: 4});
 });

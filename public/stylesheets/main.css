@@ -72,6 +72,10 @@ main.container .row {
   border-radius: 0.4rem;
 }
 
+button:hover, input[type="submit"]:hover {
+  background: #563D7C;
+  color: white;
+}
 
 .search input {
   border: 1px solid lightgrey;
