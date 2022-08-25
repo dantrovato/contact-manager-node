@@ -1,11 +1,12 @@
 "use strict";
 // FUNCTIONS ORDERED APHABETICALLY
 // git:
+// 1 - Add code to the existing attachHandlersToContactButtons() to display result of search. 2 - Fix bug on edit contact to remove all commas to edit form while editing.
 
 // bugs:
 
 // to do:
-
+// display result of search
 // Add styles to buttons for hovers and when clicked
 // Capitalize input names in forms
 // implement search facility
@@ -18,6 +19,12 @@ const dom = {};
 function addErrorStyles(element) {
   element.classList.add("error-styles");
   element.parentElement.previousElementSibling.classList.add("make-text-red");
+}
+
+function addPositioningToContacts() {
+  [...dom.$contactsSection[0].children].forEach(contact => {
+    contact.classList.add("style-contact");
+  });
 }
 
 // once the form is submitted it calls this function which attaches handlers for
@@ -80,7 +87,7 @@ function attachHandlersToContactButtons() {
       $editName.val(fullName);
       $editPhone.val(phoneNumber);
       $editEmail.val(email);
-      $editTags.val(tags.replace(",", " "));
+      $editTags.val(tags.replace(/,/g, " "));
 
       submit.addEventListener("click", event => {
         event.preventDefault();
@@ -137,18 +144,18 @@ function attachHandlersToContactButtons() {
 }
 
 function attachListenerToSearchBtn() {
-  dom.search.addEventListener("keypress", event => {
-    if (event.key.match(/^(\w|,|\s|\-)$/)) {
-      const request = fetch("http://localhost:3000/api/contacts");
-      request.
-      then(response => response.json()).
-      then(namesArray => {
-        console.log(namesArray.filter(contact => contact.full_name.toLowerCase().match(dom.search.value.toLowerCase()) ||
-        contact.tags.toLowerCase().match(dom.search.value.toLowerCase())));
-        /////////////////////////// FINISH THIS ONE /////////////////////////////////////////
-      }).
-      catch(error => console.log(error));
-    }
+  dom.search.addEventListener("keydown", event => {
+    const request = fetch("http://localhost:3000/api/contacts");
+    request.
+    then(response => response.json()).
+    then(namesArray => {
+      const results = namesArray.filter(contact => contact.full_name.toLowerCase().match(dom.search.value.toLowerCase()) ||
+      contact.tags.toLowerCase().match(dom.search.value.toLowerCase()));
+      dom.$contactsSection.html(dom.allTemp({contact: results}));
+      addPositioningToContacts();
+      console.log(namesArray)
+    }).
+    catch(error => console.log(error));
   });
 }
 
@@ -179,9 +186,9 @@ function collectValuesFromForm(form) {
 
 function drawMainPage() {
   const request = fetch("http://localhost:3000/api/contacts");
-  request
-  .then(response => response.json())
-  .then(response => {
+  request.
+  then(response => response.json()).
+  then(response => {
     if (response.length) {
       // hide the bottom part of main page which should only show when there are no contacts
       dom.$noContacts.hide();
@@ -193,16 +200,14 @@ function drawMainPage() {
       dom.$contactsSection.hide();
       dom.$noContacts.show();
     }
-  })
-  .then(() => {
+  }).
+  then(() => {
     // this one adds padding to all individual contacts after they
     // are collected from server and formatted for rendering
-    [...dom.$contactsSection[0].children].forEach(contact => {
-      contact.classList.add("style-contact");
-    });
+    addPositioningToContacts();
     // dom.$contactsSection.show();
-  })
-  .catch(error => console.log(error));
+  }).
+  catch(error => console.log(error));
 }
 
 function emailIsValid(email) {
