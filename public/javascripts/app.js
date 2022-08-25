@@ -3,14 +3,9 @@
 // git:
 
 // bugs:
-//
 
 // to do:
-
-// Move 'search' placeholder slightly to the right inside search box
-// The name goes on two lines if too long. Contact looks taller than next one
 // Refactor
-
 
 // collect variables that reference various domVariables elements
 const domVariables = {};
