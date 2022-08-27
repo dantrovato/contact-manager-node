@@ -1,11 +1,8 @@
 "use strict";
 // FUNCTIONS ORDERED APHABETICALLY
-// git:
-
+// git changes:
 // bugs:
-
-// to do:
-// Refactor
+// todo:
 
 // collect variables that reference various domVariables elements
 const domVariables = {};
@@ -25,117 +22,39 @@ function addPositioningToContacts() {
 // the delete, edit buttons within the individual contacts
 // then when the edit button is clicked it takes us to the edit-form page where we
 // can edit and resubmit the form or cancel the edit
-function attachHandlersToContactButtons() {
+function attachHandlersToEditFormButtons() {
   domVariables.$contactsSection.on("click", event => {
     // get the id of the contact stored in the div as data attribute
     const contact = event.target.closest("div.style-contact");
-    // the if (contact) makes sure contact is not null which it would be if user clicked on contacts-section but outside of the contacts themselves
+      //** the if (contact) makes sure contact is not null which it would be if user clicked on contacts-section but outside of the contacts themselves
     if (contact) {
       const id = contact.getAttribute("data-id");
-      // if element clicked is 'delete' delete contact and reload main section of the page
-      if (event.target.name === "delete" || event.target.parentElement.name === "delete") {
-        if (confirm("Is this really it for this contact??!")) {
-          (async function deleteContact() {
-            try {
-              await fetch("http://localhost:3000/api/contacts/" + id, {
-                method: "DELETE",
-                body: id,
-                headers: {
-                  'Content-Type': 'text/plain',
-                },
-              });
-              drawMainPage();
-            } catch (e) {
-              console.log("Custom error + " + e);
-            }
-          })();
-        }
+      if (deleteWasClicked(event, id)) {
+        deleteContact(event, id);
       }
 
-      // if element clicked is edit
-      if (event.target.name === "edit" || event.target.parentElement.name === "edit") {
-        domVariables.$searchContainer.hide();
-        domVariables.$editFormContainer.show();
-        domVariables.$contactsSection.hide();
-
-    // fill form entries with current contact data
-        const fullName = contact.querySelector("h4").textContent;
-      // collect values from the relevant contact
-        const inputs = [... contact.querySelectorAll("dd")];
-        const values = inputs.map(input => input.textContent);
-        let [ phoneNumber, email, tags ] = values;
-        const form = document.querySelector("form");
-        const entries = form.querySelectorAll("input");
-        const submit = document.querySelector("#edit-submit");
-        const cancel = submit.parentElement.nextElementSibling;
-        const $editForm = $("#edit-form");
-        let $editName = $("#edit-name");
-        let $editPhone = $("#edit-phone");
-        let $editEmail = $("#edit-email");
-        let $editTags = $("#edit-tags");
-
-        entries[0].value = fullName;
-        entries[1].value = phoneNumber;
-        entries[2].value = email;
-        entries[3].value = tags;
-
-        $editName.val(fullName);
-        $editPhone.val(phoneNumber);
-        $editEmail.val(email);
-        $editTags.val(tags.replace(/,/g, " "));
-
-        submit.addEventListener("click", event => {
-          event.preventDefault();
-          const elements = collectValuesFromForm($editForm);
-
-          let [editedName, editedPhone, editedEmail, editedTags] = elements;
-
-          // validate form
-          if (formValid(elements)) {
-            console.log("edits are valid");
-            const editedData = {
-              id: id,
-              full_name: editedName,
-              phone_number: editedPhone,
-              email: editedEmail,
-            };
-
-            if (editedTags === "No Tags") {
-              editedData.tags = "No Tags";
-            } else {
-              editedData.tags = editedTags.replace(/\s/g, ",");
-            }
-
-            console.log(editedData);
-
-            const json = JSON.stringify(editedData);
-            console.log(json);
-            const request = fetch("http://localhost:3000/api/contacts/" + id, {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: json,
-            });
-
-            request.
-            then(response => response.json()).
-            then(response => {
-              // console.log(response);
-              drawMainPage();
-              domVariables.$searchContainer.show();
-              resetForm(domVariables.$editFormContainer);
-              resetForm(domVariables.$formContainer);
-              domVariables.$editFormContainer.hide();
-
-            }).
-            catch(error => console.log(error));
-          } else {
-            handleErrorStyles(elements, $editForm);
-          }
-        });
+      // if element clicked is 'delete' delete contact and reload main section of the page
+      if (editWasClicked()) {
+        displayEditForm();
+        // // fill form entries with current contact data
+        fillEditFormEntry(contact, id);
       }
     }
+  });
+}
+
+// attach click event listeners to the add contact buttons to show form
+function attachListenerToAddContact() {
+  const addContactsButtons = [...document.querySelectorAll(".add-contact")];
+  addContactsButtons.forEach(button => {
+    button.addEventListener("click", event => {
+      domVariables.$contactsSection.hide();
+      // makes sure h3 has appropriate text as editing in loads the form and changes the text
+      $(".form-container h3").text("Create Contact");
+      domVariables.$formContainer.show();
+      domVariables.$noContacts.hide();
+      domVariables.$searchContainer.hide();
+    });
   });
 }
 
@@ -145,7 +64,8 @@ function attachListenerToSearchBtn() {
     request.
     then(response => response.json()).
     then(namesArray => {
-      const results = namesArray.filter(contact => contact.full_name.toLowerCase().match(domVariables.search.value.toLowerCase()) ||
+      const results = namesArray.filter(contact => contact.full_name.
+      toLowerCase().match(domVariables.search.value.toLowerCase()) ||
       contact.tags.toLowerCase().match(domVariables.search.value.toLowerCase()));
       domVariables.$contactsSection.html(domVariables.allTemp({contact: results}));
       addPositioningToContacts();
@@ -155,8 +75,65 @@ function attachListenerToSearchBtn() {
   });
 
   domVariables.search.addEventListener("blur", event => {
-    console.log(9);
-    domVariables.search.setAttribute("value", "");
+    console.log("in the blur event");
+    // the below line doesn't work. Don't know why
+    // domVariables.search.setAttribute("value", "");
+
+    // this one does
+    domVariables.search.value = "";
+  });
+}
+
+function attachListenerToSubmitEditButton(submit, $editForm, id) {
+  submit.addEventListener("click", event => {
+    event.preventDefault();
+    const elements = collectValuesFromForm($editForm);
+
+    let [editedName, editedPhone, editedEmail, editedTags] = elements;
+
+    // validate form
+    if (formValid(elements)) {
+      // console.log("edits are valid");
+      const editedData = {
+        id: id,
+        full_name: editedName.split(" ").map(name => _.capitalize(name)).join(" "),
+        // the above line automatically capitalizes the names;
+        // As this is the edit we may not want that. Use the line below in that case
+        // full_name: editedName,
+        phone_number: editedPhone,
+        email: editedEmail,
+      };
+
+      if (editedTags === "No Tags") {
+        editedData.tags = "No Tags";
+      } else {
+        editedData.tags = editedTags.replace(/\s/g, ",");
+      }
+
+      const json = JSON.stringify(editedData);
+      // console.log(json);
+      const request = fetch("http://localhost:3000/api/contacts/" + id, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: json,
+      });
+
+      request.
+      then(response => response.json()).
+      then(response => {
+        // console.log(response);
+        drawMainPage();
+        domVariables.$searchContainer.show();
+        resetForm(domVariables.$editFormContainer);
+        resetForm(domVariables.$formContainer);
+        domVariables.$editFormContainer.hide();
+      }).
+      catch(error => console.log(error));
+    } else {
+      handleErrorStyles(elements, $editForm);
+    }
   });
 }
 
@@ -181,8 +158,37 @@ function collectValuesFromForm(form) {
   const phone = elements[1].value;
   const email = elements[2].value;
   const tags = elements[3].value;
-
   return [name, phone, email, tags];
+}
+
+function deleteContact(event, id) {
+  // if element clicked is 'delete' delete contact and reload main section of the page
+  if (confirm("Is this really it for this contact??!")) {
+    (async function deleteContact() {
+      try {
+        await fetch("http://localhost:3000/api/contacts/" + id, {
+          method: "DELETE",
+          body: id,
+          headers: {
+            'Content-Type': 'text/plain',
+          },
+        });
+        drawMainPage();
+      } catch (e) {
+        console.log("Custom error + " + e);
+      }
+    })();
+  }
+}
+
+function deleteWasClicked() {
+  return event.target.name === "delete" || event.target.parentElement.name === "delete";
+}
+
+function displayEditForm() {
+  domVariables.$searchContainer.hide();
+  domVariables.$editFormContainer.show();
+  domVariables.$contactsSection.hide();
 }
 
 function drawMainPage() {
@@ -195,6 +201,11 @@ function drawMainPage() {
       domVariables.$noContacts.hide();
       domVariables.$formContainer.hide();
       domVariables.$contactsSection.show();
+      // create template for the contacts
+      domVariables.oneTemp = Handlebars.compile($("#one").html());
+      domVariables.allTemp = Handlebars.compile($("#all").html());
+      // const oneTemp = Handlebars.compile($("#one").html());
+      // const allTemp = Handlebars.compile($("#all").html());
       Handlebars.registerPartial("oneTemp", domVariables.oneTemp);
       domVariables.$contactsSection.html(domVariables.allTemp({contact: response}));
     } else {
@@ -211,10 +222,44 @@ function drawMainPage() {
   catch(error => console.log(error));
 }
 
+function editWasClicked() {
+  return event.target.name === "edit" || event.target.parentElement.name === "edit";
+}
+
 function emailIsValid(email) {
   // matches one or more letter, underscore, digit or dot followed by a @
   // followed but same as before then a single dot and one or nmore letter
   return email.match(/^(\w|[0-9]|\.)+@(\w|[0-9]|\.)+\.[a-zA-Z]+$/);
+}
+
+// fill edit form entries with contact data for contact clicked
+function fillEditFormEntry(contact, id) {
+  const fullName = contact.querySelector("h4").textContent;
+  // collect values from the relevant contact
+  const inputs = [... contact.querySelectorAll("dd")];
+  const values = inputs.map(input => input.textContent);
+  let [ phoneNumber, email, tags ] = values;
+  const form = document.querySelector("form");
+  const entries = form.querySelectorAll("input");
+  const submit = document.querySelector("#edit-submit");
+  const cancel = submit.parentElement.nextElementSibling;
+  const $editForm = $("#edit-form");
+  let $editName = $("#edit-name");
+  let $editPhone = $("#edit-phone");
+  let $editEmail = $("#edit-email");
+  let $editTags = $("#edit-tags");
+
+  entries[0].value = fullName;
+  entries[1].value = phoneNumber;
+  entries[2].value = email;
+  entries[3].value = tags;
+
+  $editName.val(fullName);
+  $editPhone.val(phoneNumber);
+  $editEmail.val(email);
+  $editTags.val(tags.replace(/,/g, " "));
+
+  attachListenerToSubmitEditButton(submit, $editForm, id);
 }
 
 function formValid(elementsArray) {
@@ -225,22 +270,22 @@ function formValid(elementsArray) {
   emailIsValid(email) && tagsAreValid(tags);
 }
 
-  function generateMessage(element) {
-    const text = element.parentElement.previousElementSibling.firstElementChild.textContent;
-    // return appropriate text according to which element is passed in
-    let message;
-    if ( text === "Full name:") {
-      message = "Enter upto three single space separated words of any number of letters.";
-    } else if (text === "Email address:") {
-      message = "Enter one or more letter, underscore, digit or dot followed by a @ followed but same as before then a single dot and one or more letter.";
-    } else if (text === "Telephone number:") {
-      message = "Enter a plus sign followed by 9 to 13 digits.";
-    } else if (text === "Tags:") {
-      message = "Enter any number of letters, numbers  or underscores followed by an optional dash for double barrel words (chimney-sweep) and single space. More tags can be entered with the same pattern.";
-    }
-
-    return message;
+function generateMessage(element) {
+  const text = element.parentElement.previousElementSibling.firstElementChild.textContent;
+  // return appropriate text according to which element is passed in
+  let message;
+  if ( text === "Full name:") {
+    message = "Enter upto three single space separated words of any number of letters.";
+  } else if (text === "Email address:") {
+    message = "Enter one or more letter, underscore, digit or dot followed by a @ followed but same as before then a single dot and one or more letter.";
+  } else if (text === "Telephone number:") {
+    message = "Enter a plus sign followed by 9 to 13 digits.";
+  } else if (text === "Tags:") {
+    message = "Enter any number of letters, numbers  or underscores followed by an optional dash for double barrel words (chimney-sweep) and single space. More tags can be entered with the same pattern.";
   }
+
+  return message;
+}
 
 // adds error styles to incorrect inputs plus adds error message and it removes
 // all that if fields are correct
@@ -327,22 +372,6 @@ function resetForm($form) {
   });
 }
 
-// attach click event listeners to the add contact buttons to show form
-function showForm() {
-  const addContactsButtons = [...document.querySelectorAll(".add-contact")];
-  addContactsButtons.forEach(button => {
-    button.addEventListener("click", event => {
-      domVariables.$contactsSection.hide();
-      // makes sure h3 has appropriate text as editing in loads the form and changes the text
-      $(".form-container h3").text("Create Contact");
-      domVariables.$formContainer.show();
-      domVariables.$noContacts.hide();
-      domVariables.$searchContainer.hide();
-      // domVariables.$searchContainer.hide();
-    });
-  });
-}
-
 // attach click event listener to submit button in the form
 function submitForm() {
   const $submit = $("#submit");
@@ -352,7 +381,7 @@ function submitForm() {
     const elements = collectValuesFromForm($form); // returns an array [name, phone, email, tags]
 
     if (formValid(elements)) {
-      console.log("valid");
+      // console.log("valid");
       const formValues = $form[0].elements;
       const data = {
         full_name: formValues[0].value.split(" ").map(name => _.capitalize(name)).join(" "),
@@ -374,7 +403,7 @@ function submitForm() {
       request.
       then(response => response.json()).
       then(response => {
-        console.log(response);
+        // console.log(response);
         drawMainPage();
         domVariables.$searchContainer.show();
         resetForm(domVariables.$formContainer);
@@ -395,8 +424,6 @@ function tagsAreValid(tags) {
 document.addEventListener("DOMContentLoaded", () => {
   // populate the domVariables object literal with useful variables:
   domVariables.$contactsSection = $("#contacts-section");  // where handlebars is gonna show
-  domVariables.oneTemp = Handlebars.compile($("#one").html());
-  domVariables.allTemp = Handlebars.compile($("#all").html());
   domVariables.$noContacts = $(".no-contacts");
   domVariables.$formContainer = $(".form-container");
   domVariables.$searchContainer = $(".search-container");
@@ -410,12 +437,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     attachListenerToSearchBtn();
     // attach click event listeners to the add contact buttons to show form
-    showForm();
+    attachListenerToAddContact();
     // attach click event listeners to the cancel buttons to restore main page
     cancelCreateContact();
     // attach click event listener to submit button in the form
     submitForm();
 
-    attachHandlersToContactButtons();
+    attachHandlersToEditFormButtons();
   })();
 });
