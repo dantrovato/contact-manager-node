@@ -423,7 +423,7 @@ function tagsAreValid(tags) {
 
 document.addEventListener("DOMContentLoaded", () => {
   // populate the domVariables object literal with useful variables:
-  domVariables.$contactsSection = $("#contacts-section");  // where handlebars is gonna show
+  domVariables.$contactsSection = $("#contacts-section");  
   domVariables.$noContacts = $(".no-contacts");
   domVariables.$formContainer = $(".form-container");
   domVariables.$searchContainer = $(".search-container");

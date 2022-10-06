@@ -1,297 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel="stylesheet" href="./stylesheets/main.css">
-  <!-- bootrap icon library -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="./stylesheets/main.css" />
+    <!-- bootrap icon library -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+    />
 
-  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js" integrity="sha384-H6KKS1H1WwuERMSm+54dYLzjg0fKqRK5ZRyASdbrI/lwrCc6bXEmtGYr5SwvP1pZ" crossorigin="anonymous"></script>
-  <script src="/javascripts/jquery.js"></script>
-  <script src="/javascripts/handlebars.js"></script>
-</head>
-<body>
-  <!-- header -->
-  <header class="container jumbotron">
-    <div class="row">
-      <div class="col-12 text-center">
-        <h2>Contact Manager</h2>
+    <script src="./javascripts/jquery.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"
+      integrity="sha384-H6KKS1H1WwuERMSm+54dYLzjg0fKqRK5ZRyASdbrI/lwrCc6bXEmtGYr5SwvP1pZ"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/javascripts/handlebars.js"></script>
+  </head>
+  <body>
+    <!-- header -->
+    <header class="container jumbotron">
+      <div class="row">
+        <div class="col-12 text-center">
+          <h2>Contact Manager</h2>
+        </div>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="col-12 text-center">
-        <p>Using jQuery, Handlebars, Bootstrap, Lodash and a lot of patience.</p>
+      <div class="row">
+        <div class="col-12 text-center">
+          <p>
+            Using jQuery, Handlebars, Bootstrap, Lodash and a lot of patience.
+          </p>
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <!-- main placeholder to toggle hidden class-->
-  <main class="container">
-    <div class="row search-container">
-      <div class="col-6 text-center button-style add-contact">
-        <button type="button" name="button">Add Contact</button>
+    <!-- main placeholder to toggle hidden class-->
+    <main class="container">
+      <div class="row search-container">
+        <div class="col-6 text-center button-style add-contact">
+          <button type="button" name="button">Add Contact</button>
+        </div>
+        <div class="col-6 text-center search">
+          <input type="text" name="" placeholder="Search" id="search" />
+        </div>
       </div>
-      <div class="col-6 text-center search">
-        <input type="text" name="" placeholder="Search" id="search">
-      </div>
-    </div>
 
-    <!-- bottom part of main page showing where no contact yet exists -->
-    <div class="row no-contacts">
-      <div class="col-12 text-center">
-        <h4>There are no contacts.</h4>
+      <!-- bottom part of main page showing where no contact yet exists -->
+      <div class="row no-contacts">
+        <div class="col-12 text-center">
+          <h4>There are no contacts.</h4>
+        </div>
+        <div class="col-12 button-style text-center add-contact">
+          <button type="button" name="button">Add Contact</button>
+        </div>
+
+        <!-- separator line -->
+        <div class="col line"></div>
       </div>
-      <div class="col-12 button-style text-center add-contact">
-        <button type="button" name="button">Add Contact</button>
+
+      <!-- alternative to the section above showing only when one or more contacts exist -->
+      <!-- populated with handlebars templating -->
+      <div id="contacts-section"></div>
+    </main>
+
+    <!-- main contact form initially hidden-->
+    <div class="container shorter-width hidden form-container">
+      <div class="row">
+        <div class="col text-center">
+          <h3>Create Contact</h3>
+        </div>
       </div>
 
       <!-- separator line -->
-      <div class="col line"></div>
-    </div>
-
-    <!-- alternative to the section above showing only when one or more contacts exist -->
-    <!-- populated with handlebars templating -->
-    <div id="contacts-section">
-
-    </div>
-
-  </main>
-
-  <!-- main contact form initially hidden-->
-  <div class="container shorter-width hidden form-container">
-    <div class="row">
-      <div class="col text-center">
-        <h3>Create Contact</h3>
+      <div class="row">
+        <div class="col line"></div>
       </div>
-    </div>
 
-    <!-- separator line -->
-    <div class="row">
-      <div class="col line"></div>
-    </div>
-
-    <!-- form -->
-    <div class="row">
-      <div class="col">
-        <form class="container" action="index.html" method="post" id="form">
-
-          <!-- fullname -->
-          <div class="row">
-            <div class="col-4">
-              <p>Full name:</p>
+      <!-- form -->
+      <div class="row">
+        <div class="col">
+          <form class="container" action="index.html" method="post" id="form">
+            <!-- fullname -->
+            <div class="row">
+              <div class="col-4">
+                <p>Full name:</p>
+              </div>
+              <div class="col-6"><input type="text" class"full-name"></div>
+              <div class="col-2"></div>
             </div>
-            <div class="col-6">
-              <input type="text" class"full-name">
-            </div>
-            <div class="col-2"></div>
-          </div>
 
-          <!-- phone -->
-          <div class="row">
-            <div class="col-4">
-              <p>Telephone number:</p>
+            <!-- phone -->
+            <div class="row">
+              <div class="col-4">
+                <p>Telephone number:</p>
+              </div>
+              <div class="col-6">
+                <input type="text" name="" value="" />
+              </div>
+              <div class="col-2"></div>
             </div>
-            <div class="col-6">
-              <input type="text" name="" value="">
+
+            <!-- email -->
+            <div class="row">
+              <div class="col-4">
+                <p>Email address:</p>
+              </div>
+              <div class="col-6">
+                <input type="text" name="" value="" />
+              </div>
+              <div class="col-2"></div>
             </div>
-            <div class="col-2"></div>
-          </div>
 
-          <!-- email -->
-          <div class="row">
-            <div class="col-4">
-              <p>Email address:</p>
+            <!-- tags -->
+            <div class="row">
+              <div class="col-4">
+                <p>Tags:</p>
+              </div>
+              <div class="col-6">
+                <input type="text" name="" value="" />
+              </div>
+              <div class="col-2"></div>
             </div>
-            <div class="col-6">
-              <input type="text" name="" value="">
-            </div>
-            <div class="col-2"></div>
-          </div>
 
-          <!-- tags -->
-          <div class="row">
-            <div class="col-4">
-              <p>Tags:</p>
-            </div>
-            <div class="col-6">
-              <input type="text" name="" value="">
-            </div>
-            <div class="col-2"></div>
-          </div>
+            <!-- command buttons -->
+            <!-- fullname -->
+            <div class="row">
+              <!-- empty space -->
+              <div class="col-4"></div>
 
-          <!-- command buttons -->
-          <!-- fullname -->
-          <div class="row">
+              <div class="col-6">
+                <div class="row space-between">
+                  <div
+                    class="col-xs-12-md-6 text-center button-style"
+                    id="submit"
+                  >
+                    <!-- submit button -->
+                    <input type="submit" name="" value="Submit" />
+                  </div>
 
-            <!-- empty space -->
-            <div class="col-4"></div>
-
-            <div class="col-6">
-              <div class="row space-between">
-                <div class="col-xs-12-md-6 text-center button-style" id="submit">
-                  <!-- submit button -->
-                  <input type="submit" name="" value="Submit">
-                </div>
-
-                <div class="col-xs-12-md-6 text-center button-style cancel-create-contact">
-                  <!-- cancel button -->
-                  <button type="button" name="button">Cancel</button>
+                  <div
+                    class="col-xs-12-md-6 text-center button-style cancel-create-contact"
+                  >
+                    <!-- cancel button -->
+                    <button type="button" name="button">Cancel</button>
+                  </div>
                 </div>
               </div>
+
+              <!-- empty space -->
+              <div class="col-2"></div>
             </div>
 
-            <!-- empty space -->
-            <div class="col-2"></div>
-          </div>
-
-          <!-- separator line -->
-          <div class="row">
-            <div class="col line"></div>
-          </div>
-
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- edit form container, initially hidden. showing when user clicks edit button -->
-  <div class="container shorter-width hidden edit-form-container">
-    <div class="row">
-      <div class="col text-center">
-        <h3>Edit Contact</h3>
+            <!-- separator line -->
+            <div class="row">
+              <div class="col line"></div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
 
-    <!-- separator line -->
-    <div class="row">
-      <div class="col line"></div>
-    </div>
+    <!-- edit form container, initially hidden. showing when user clicks edit button -->
+    <div class="container shorter-width hidden edit-form-container">
+      <div class="row">
+        <div class="col text-center">
+          <h3>Edit Contact</h3>
+        </div>
+      </div>
 
-    <!-- form -->
-    <div class="row">
-      <div class="col">
-        <form class="container" action="index.html" method="post" id="edit-form">
+      <!-- separator line -->
+      <div class="row">
+        <div class="col line"></div>
+      </div>
 
-          <!-- fullname -->
-          <div class="row">
-            <div class="col-4">
-              <p>Full name:</p>
+      <!-- form -->
+      <div class="row">
+        <div class="col">
+          <form
+            class="container"
+            action="index.html"
+            method="post"
+            id="edit-form"
+          >
+            <!-- fullname -->
+            <div class="row">
+              <div class="col-4">
+                <p>Full name:</p>
+              </div>
+              <div class="col-6">
+                <input type="text" id="edit-name" class"full-name">
+              </div>
+              <div class="col-2"></div>
             </div>
-            <div class="col-6">
-              <input type="text" id="edit-name" class"full-name">
-            </div>
-            <div class="col-2"></div>
-          </div>
 
-          <!-- phone -->
-          <div class="row">
-            <div class="col-4">
-              <p>Telephone number:</p>
+            <!-- phone -->
+            <div class="row">
+              <div class="col-4">
+                <p>Telephone number:</p>
+              </div>
+              <div class="col-6">
+                <input type="text" id="edit-phone" />
+              </div>
+              <div class="col-2"></div>
             </div>
-            <div class="col-6">
-              <input type="text" id="edit-phone">
+
+            <!-- email -->
+            <div class="row">
+              <div class="col-4">
+                <p>Email address:</p>
+              </div>
+              <div class="col-6">
+                <input type="text" id="edit-email" />
+              </div>
+              <div class="col-2"></div>
             </div>
-            <div class="col-2"></div>
-          </div>
 
-          <!-- email -->
-          <div class="row">
-            <div class="col-4">
-              <p>Email address:</p>
+            <!-- tags -->
+            <div class="row">
+              <div class="col-4">
+                <p>Tags:</p>
+              </div>
+              <div class="col-6">
+                <input type="text" id="edit-tags" />
+              </div>
+              <div class="col-2"></div>
             </div>
-            <div class="col-6">
-              <input type="text" id="edit-email">
-            </div>
-            <div class="col-2"></div>
-          </div>
 
-          <!-- tags -->
-          <div class="row">
-            <div class="col-4">
-              <p>Tags:</p>
-            </div>
-            <div class="col-6">
-              <input type="text" id="edit-tags">
-            </div>
-            <div class="col-2"></div>
-          </div>
+            <!-- command buttons -->
+            <!-- fullname -->
+            <div class="row">
+              <!-- empty space -->
+              <div class="col-4"></div>
 
-          <!-- command buttons -->
-          <!-- fullname -->
-          <div class="row">
+              <div class="col-6">
+                <div class="row space-between">
+                  <div
+                    class="col-xs-12-md-6 text-center button-style"
+                    id="submit"
+                  >
+                    <!-- submit button -->
+                    <input
+                      type="submit"
+                      name=""
+                      value="Submit"
+                      id="edit-submit"
+                    />
+                  </div>
 
-            <!-- empty space -->
-            <div class="col-4"></div>
-
-            <div class="col-6">
-              <div class="row space-between">
-                <div class="col-xs-12-md-6 text-center button-style" id="submit">
-                  <!-- submit button -->
-                  <input type="submit" name="" value="Submit" id="edit-submit">
-                </div>
-
-                <div class="col-xs-12-md-6 text-center button-style cancel-create-contact">
-                  <!-- cancel button -->
-                  <button type="button" name="button">Cancel</button>
+                  <div
+                    class="col-xs-12-md-6 text-center button-style cancel-create-contact"
+                  >
+                    <!-- cancel button -->
+                    <button type="button" name="button">Cancel</button>
+                  </div>
                 </div>
               </div>
+
+              <!-- empty space -->
+              <div class="col-2"></div>
             </div>
 
-            <!-- empty space -->
-            <div class="col-2"></div>
-          </div>
-
-          <!-- separator line -->
-          <div class="row">
-            <div class="col line"></div>
-          </div>
-
-        </form>
+            <!-- separator line -->
+            <div class="row">
+              <div class="col line"></div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- footer -->
-  <div class="container footer">
-    <div class="row">
-      <div class="col-12 text-center">
-        <p>Developed by Daniele Trovato. Repo <a href="https://github.com/dantrovato">at github.com/dantrovato</a>.</p>
+    <!-- footer -->
+    <div class="container footer">
+      <div class="row">
+        <div class="col-12 text-center">
+          <p>
+            Developed by Daniele Trovato. Repo
+            <a href="https://github.com/dantrovato">at github.com/dantrovato</a
+            >.
+          </p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script type="x-handlebars" id="all">
-    {{#each contact}}
-      {{> oneTemp}}
-    {{/each}}
-  </script>
-  <!-- handlebars this section -->
-  <script type="x-handlebars" id="one">
-    <div data-id={{id}}>
-      <h4>{{full_name}}</h4>
-      <dt>Phone Number:</dt>
-      <dd>{{phone_number}}</dd>
-      <dt>Email:</dt>
-      <dd>{{email}}</dd>
-      <dt>Tags:</dt>
-      {{#if tags}}
-        <dd>{{tags}}</dd>
-      {{else}}
-        <dd>No Tags</dd>
-      {{/if}}
+    <script type="x-handlebars" id="all">
+      {{#each contact}}
+        {{> oneTemp}}
+      {{/each}}
+    </script>
+    <!-- handlebars this section -->
+    <script type="x-handlebars" id="one">
+      <div data-id={{id}}>
+        <h4>{{full_name}}</h4>
+        <dt>Phone Number:</dt>
+        <dd>{{phone_number}}</dd>
+        <dt>Email:</dt>
+        <dd>{{email}}</dd>
+        <dt>Tags:</dt>
+        {{#if tags}}
+          <dd>{{tags}}</dd>
+        {{else}}
+          <dd>No Tags</dd>
+        {{/if}}
 
-      <div class="edit-contact-buttons">
-        <button type="button" name="edit" class="smaller-buttons edit"><span class="bi bi-pencil"> Edit</span</button>
-        <button type="button" name="delete" class="smaller-buttons delete"><span class="bi bi-trash"> Delete</span></button>
+        <div class="edit-contact-buttons">
+          <button type="button" name="edit" class="smaller-buttons edit"><span class="bi bi-pencil"> Edit</span</button>
+          <button type="button" name="delete" class="smaller-buttons delete"><span class="bi bi-trash"> Delete</span></button>
+        </div>
       </div>
-    </div>
-  </script>
+    </script>
 
-  <script type="text/javascript" src="./javascripts/app.js"></script>
-</body>
+    <script type="text/javascript" src="./javascripts/app.js"></script>
+  </body>
 </html>
